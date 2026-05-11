@@ -5,14 +5,27 @@ const DAYS_SHORT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
 
 function HeatBar({ pct, label }) {
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="w-full h-16 rounded-lg relative overflow-hidden bg-bg">
-        <div
-          className="absolute bottom-0 w-full rounded-lg transition-all duration-700"
-          style={{ height: `${Math.max(pct, 4)}%`, background: '#10b981', opacity: pct === 0 ? 0.2 : 0.7 + pct * 0.003 }}
-        />
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative flex flex-col justify-end" style={{ height: 64, width: '100%' }}>
+        {pct > 0 && (
+          <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-accent font-bold whitespace-nowrap">
+            {pct}%
+          </span>
+        )}
+        <div className="w-full rounded-lg overflow-hidden bg-bg-alt" style={{ height: '100%' }}>
+          <div
+            className="w-full rounded-t-lg transition-all duration-700"
+            style={{
+              height: `${Math.max(pct, 3)}%`,
+              background: pct === 0
+                ? 'rgba(255,255,255,0.04)'
+                : 'linear-gradient(to top, #d97706, #fbbf24)',
+              marginTop: 'auto',
+            }}
+          />
+        </div>
       </div>
-      <span className="text-[10px] text-text-muted">{label}</span>
+      <span className="text-[10px] text-text-muted font-medium">{label}</span>
     </div>
   )
 }
@@ -36,39 +49,40 @@ export default function Stats() {
   const totalDone = Object.values(completions).flat().length
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in">
+    <div className="flex flex-col gap-6 animate-slide-up">
       <div>
         <h1 className="text-xl font-bold text-text">Estatísticas</h1>
-        <p className="text-sm text-text-sub mt-0.5">Seu desempenho ao longo do tempo</p>
+        <p className="text-sm text-text-muted mt-0.5">Seu desempenho ao longo do tempo</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* Metric cards */}
+      <div className="grid grid-cols-2 gap-3 stagger-children">
         {[
           { label: 'Aderência semanal', value: `${adherence}%`, icon: TrendingUp },
           { label: 'Maior sequência',   value: `${bestStreak}d`, icon: Flame },
           { label: 'Total concluídos',  value: totalDone,         icon: Target },
           { label: 'Hábitos ativos',    value: habits.length,     icon: Calendar },
         ].map(({ label, value, icon: Icon }) => (
-          <div key={label} className="bg-bg-card border border-border rounded-xl p-4 shadow-card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-text-sub font-medium">{label}</span>
-              <Icon size={14} className="text-text-muted" />
+          <div key={label} className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col gap-2 animate-slide-up shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-text-muted font-medium uppercase tracking-wider">{label}</span>
+              <Icon size={13} className="text-text-muted" />
             </div>
-            <p className="text-2xl font-bold text-text">{value}</p>
+            <p className="text-3xl font-bold font-mono text-gradient-amber leading-none">{value}</p>
           </div>
         ))}
       </div>
 
-      {/* weekly chart */}
-      <div className="bg-bg-card border border-border rounded-xl p-5 shadow-card">
-        <h2 className="text-sm font-semibold text-text mb-4">Últimos 7 dias</h2>
+      {/* Weekly chart */}
+      <div className="bg-bg-card border border-border rounded-2xl p-5 shadow-card">
+        <h2 className="text-sm font-semibold text-text mb-6">Últimos 7 dias</h2>
         <div className="grid grid-cols-7 gap-2">
           {last7.map((d, i) => <HeatBar key={i} pct={d.pct} label={d.label} />)}
         </div>
       </div>
 
-      {/* per habit */}
-      <div className="bg-bg-card border border-border rounded-xl p-5 shadow-card">
+      {/* Per habit */}
+      <div className="bg-bg-card border border-border rounded-2xl p-5 shadow-card">
         <h2 className="text-sm font-semibold text-text mb-4">Por hábito</h2>
         {habits.length === 0 && (
           <p className="text-sm text-text-sub text-center py-4">Sem hábitos cadastrados.</p>
@@ -78,24 +92,27 @@ export default function Stats() {
             const streak = getStreak(h.id)
             const totalH = Object.values(completions).filter(arr => arr.includes(h.id)).length
             return (
-              <div key={h.id} className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 border border-border"
-                  style={{ background: `${h.color}15` }}>
+              <div key={h.id} className="flex items-center gap-3 group hover:opacity-100 transition-opacity">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+                  style={{ background: `${h.color}18`, border: `1px solid ${h.color}28` }}>
                   {h.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-text font-medium truncate">{h.name}</span>
-                    <span className="text-xs text-text-sub ml-2 shrink-0">{totalH}x</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-text font-semibold truncate">{h.name}</span>
+                    <span className="text-xs font-mono text-text-muted ml-2 shrink-0">{totalH}×</span>
                   </div>
-                  <div className="w-full h-1.5 bg-bg rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-bg-alt rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${Math.min(100, totalH * 5)}%`, background: h.color }} />
+                      style={{
+                        width: `${Math.min(100, totalH * 5)}%`,
+                        background: `linear-gradient(90deg, ${h.color}99, ${h.color})`,
+                      }} />
                   </div>
                 </div>
                 {streak > 0 && (
-                  <span className="flex items-center gap-1 text-xs text-amber-600 font-medium shrink-0">
-                    <Flame size={11} /> {streak}d
+                  <span className="flex items-center gap-1 text-xs font-bold font-mono text-gradient-amber shrink-0">
+                    <Flame size={11} className="text-accent" /> {streak}d
                   </span>
                 )}
               </div>

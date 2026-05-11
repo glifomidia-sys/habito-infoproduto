@@ -26,11 +26,13 @@ function AddHabitModal({ onClose, onAdd }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
-      <div className="bg-bg-card border border-border rounded-2xl w-full max-w-md p-6 animate-fade-in shadow-lg">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-bg-card border border-border-strong rounded-2xl w-full max-w-md p-6 animate-scale-in shadow-card-depth">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-text">Novo hábito</h2>
-          <button onClick={onClose} className="text-text-muted hover:text-text"><X size={18} /></button>
+          <h2 className="text-base font-bold text-text">Novo hábito</h2>
+          <button onClick={onClose} className="text-text-muted hover:text-text transition-colors w-7 h-7 flex items-center justify-center rounded-lg hover:bg-bg-hover">
+            <X size={16} />
+          </button>
         </div>
         <form onSubmit={submit} className="flex flex-col gap-4">
           <div>
@@ -38,8 +40,10 @@ function AddHabitModal({ onClose, onAdd }) {
             <div className="flex flex-wrap gap-2">
               {ICONS.map(ic => (
                 <button key={ic} type="button" onClick={() => setForm(p => ({ ...p, icon: ic }))}
-                  className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center border transition-all
-                    ${form.icon === ic ? 'border-accent bg-accent-light' : 'border-border bg-bg hover:bg-bg-hover'}`}>
+                  className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center border transition-all
+                    ${form.icon === ic
+                      ? 'border-accent bg-accent-light shadow-glow-sm'
+                      : 'border-border bg-bg-alt hover:bg-bg-hover'}`}>
                   {ic}
                 </button>
               ))}
@@ -48,38 +52,38 @@ function AddHabitModal({ onClose, onAdd }) {
 
           <div>
             <label className="text-xs text-text-sub font-medium mb-2 block">Cor</label>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {COLORS.map(c => (
                 <button key={c} type="button" onClick={() => setForm(p => ({ ...p, color: c }))}
-                  className={`w-7 h-7 rounded-full border-2 transition-all ${form.color === c ? 'border-text scale-110' : 'border-transparent'}`}
-                  style={{ background: c }} />
+                  className={`w-7 h-7 rounded-full transition-all ${form.color === c ? 'ring-2 ring-offset-2 ring-offset-bg-card scale-110' : 'opacity-70 hover:opacity-100'}`}
+                  style={{ background: c, ringColor: c }} />
               ))}
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-text-sub font-medium mb-1 block">Nome</label>
+            <label className="text-xs text-text-sub font-medium mb-1.5 block">Nome</label>
             <input
               value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
               placeholder="Ex: Meditar, Ler, Exercitar..."
-              className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text
-                placeholder-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20"
+              className="w-full bg-bg border border-border rounded-xl px-3 py-2.5 text-sm text-text
+                placeholder-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-text-sub font-medium mb-1 block">Horário</label>
+              <label className="text-xs text-text-sub font-medium mb-1.5 block">Horário</label>
               <input type="time" value={form.time} onChange={e => setForm(p => ({ ...p, time: e.target.value }))}
-                className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text
-                  focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20" />
+                className="w-full bg-bg border border-border rounded-xl px-3 py-2.5 text-sm text-text
+                  focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all" />
             </div>
             <div>
-              <label className="text-xs text-text-sub font-medium mb-1 block">Local</label>
+              <label className="text-xs text-text-sub font-medium mb-1.5 block">Local</label>
               <input value={form.place} onChange={e => setForm(p => ({ ...p, place: e.target.value }))}
                 placeholder="Ex: Casa, Academia..."
-                className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-sm text-text
-                  placeholder-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20" />
+                className="w-full bg-bg border border-border rounded-xl px-3 py-2.5 text-sm text-text
+                  placeholder-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all" />
             </div>
           </div>
 
@@ -88,10 +92,10 @@ function AddHabitModal({ onClose, onAdd }) {
             <div className="flex gap-1.5">
               {DAYS.map((d, i) => (
                 <button key={i} type="button" onClick={() => toggleDay(i)}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium border transition-all
+                  className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all
                     ${form.days.includes(i)
-                      ? 'bg-accent-light border-accent text-accent-dark'
-                      : 'bg-bg border-border text-text-sub hover:bg-bg-hover'}`}>
+                      ? 'bg-accent-light border-border-accent text-accent'
+                      : 'bg-bg border-border text-text-muted hover:text-text-sub hover:bg-bg-hover'}`}>
                   {d}
                 </button>
               ))}
@@ -99,8 +103,8 @@ function AddHabitModal({ onClose, onAdd }) {
           </div>
 
           <button type="submit"
-            className="mt-1 py-2.5 bg-accent text-white font-semibold text-sm rounded-xl
-              hover:bg-accent-dark transition-colors shadow-sm">
+            className="mt-1 py-3 font-semibold text-sm rounded-xl transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #fbbf24, #d97706)', color: '#07070a' }}>
             Adicionar hábito
           </button>
         </form>
@@ -118,36 +122,40 @@ export default function Habits() {
   const displayed = filter === 'today' ? habits.filter(h => h.days.includes(dow)) : habits
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in">
+    <div className="flex flex-col gap-6 animate-slide-up">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-text">Hábitos</h1>
-          <p className="text-sm text-text-sub mt-0.5">{habits.length} hábito{habits.length !== 1 ? 's' : ''} cadastrado{habits.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-text-muted mt-0.5">
+            {habits.length} hábito{habits.length !== 1 ? 's' : ''} cadastrado{habits.length !== 1 ? 's' : ''}
+          </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-accent text-white font-semibold text-sm px-4 py-2.5
-            rounded-xl hover:bg-accent-dark transition-colors shadow-sm"
+          className="flex items-center gap-2 font-semibold text-sm px-4 py-2.5
+            rounded-xl transition-all hover:opacity-90 active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #fbbf24, #d97706)', color: '#07070a' }}
         >
-          <Plus size={16} /> Novo
+          <Plus size={15} /> Novo
         </button>
       </div>
 
-      <div className="flex gap-2">
+      {/* Filter pills */}
+      <div className="inline-flex bg-bg-alt rounded-2xl p-1 gap-1 self-start">
         {[['all','Todos'],['today','Hoje']].map(([val, label]) => (
           <button key={val} onClick={() => setFilter(val)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-all
+            className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all
               ${filter === val
-                ? 'bg-accent-light border-accent text-accent-dark'
-                : 'bg-bg-card border-border text-text-sub hover:bg-bg-hover'}`}>
+                ? 'bg-accent-light text-accent'
+                : 'text-text-muted hover:text-text-sub'}`}>
             {label}
           </button>
         ))}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 stagger-children">
         {displayed.length === 0 && (
-          <div className="py-16 text-center text-text-sub text-sm bg-bg-card border border-border rounded-xl shadow-card">
+          <div className="py-16 text-center text-text-sub text-sm bg-bg-card border border-border rounded-2xl">
             Nenhum hábito aqui.{' '}
             <button onClick={() => setShowModal(true)} className="text-accent hover:underline">Criar o primeiro</button>
           </div>
@@ -157,37 +165,39 @@ export default function Habits() {
           const streak = getStreak(h.id)
           return (
             <div key={h.id}
-              className="bg-bg-card border border-border rounded-xl p-4 flex items-center gap-4 group shadow-card">
-              <button onClick={() => toggleHabit(h.id)} className="shrink-0">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border border-border"
-                  style={{ background: `${h.color}15` }}>
-                  {h.icon}
-                </div>
-              </button>
+              className={`bg-bg-card border rounded-2xl p-4 flex items-center gap-4 group transition-all duration-150 animate-slide-up
+                ${isDone ? 'border-border-accent' : 'border-border hover:border-border-strong'}`}>
+
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+                style={{ background: `${h.color}18`, border: `1px solid ${h.color}30` }}>
+                {h.icon}
+              </div>
 
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium ${isDone ? 'line-through text-text-muted' : 'text-text'}`}>
+                <p className={`text-sm font-semibold leading-snug ${isDone ? 'line-through text-text-muted' : 'text-text'}`}>
                   {h.name}
                 </p>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <span className="flex items-center gap-1 text-xs text-text-sub">
-                    <Clock size={11} /> {h.time}
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="flex items-center gap-1 text-xs text-text-muted">
+                    <Clock size={10} /> {h.time}
                   </span>
                   {h.place && (
-                    <span className="flex items-center gap-1 text-xs text-text-sub">
-                      <MapPin size={11} /> {h.place}
+                    <span className="flex items-center gap-1 text-xs text-text-muted">
+                      <MapPin size={10} /> {h.place}
                     </span>
                   )}
                   {streak > 0 && (
-                    <span className="flex items-center gap-1 text-xs text-amber-600 font-medium">
-                      <Flame size={11} /> {streak}d
+                    <span className="flex items-center gap-1 text-xs font-bold font-mono text-gradient-amber">
+                      <Flame size={11} className="text-accent" /> {streak}d
                     </span>
                   )}
                 </div>
-                <div className="flex gap-1 mt-2">
+                <div className="flex gap-1 mt-2.5">
                   {DAYS.map((d, i) => (
-                    <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded font-medium
-                      ${h.days.includes(i) ? 'text-accent-dark bg-accent-light' : 'text-text-muted bg-bg'}`}>
+                    <span key={i} className={`text-[9px] px-1.5 py-0.5 rounded-md font-semibold tracking-wide
+                      ${h.days.includes(i)
+                        ? 'text-accent bg-accent-light'
+                        : 'text-text-muted bg-bg-alt'}`}>
                       {d}
                     </span>
                   ))}
@@ -200,7 +210,7 @@ export default function Habits() {
                   {isDone ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                 </button>
                 <button onClick={() => removeHabit(h.id)}
-                  className="text-text-muted hover:text-danger transition-colors opacity-0 group-hover:opacity-100">
+                  className="text-text-muted hover:text-danger transition-all opacity-0 group-hover:opacity-100">
                   <Trash2 size={16} />
                 </button>
               </div>

@@ -22,9 +22,9 @@ function AppShell() {
   const Page = PAGES[page] || Dashboard
 
   return (
-    <div className="flex h-screen bg-bg overflow-hidden">
+    <div className="flex h-svh bg-bg overflow-hidden">
       <Sidebar page={page} setPage={setPage} />
-      <main className="flex-1 overflow-y-auto bg-bg">
+      <main className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-6 py-8">
           <Page setPage={setPage} />
         </div>

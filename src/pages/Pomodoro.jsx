@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { Play, Pause, RotateCcw } from 'lucide-react'
 
 const MODES = [
-  { id: 'focus', label: 'Foco',        minutes: 25, color: '#10b981' },
-  { id: 'short', label: 'Pausa curta', minutes: 5,  color: '#6366f1' },
-  { id: 'long',  label: 'Pausa longa', minutes: 15, color: '#f59e0b' },
+  { id: 'focus', label: 'Foco',        minutes: 25, color: '#f59e0b', track: 'rgba(245,158,11,0.10)' },
+  { id: 'short', label: 'Pausa curta', minutes: 5,  color: '#818cf8', track: 'rgba(129,140,248,0.10)' },
+  { id: 'long',  label: 'Pausa longa', minutes: 15, color: '#34d399', track: 'rgba(52,211,153,0.10)' },
 ]
 
 function pad(n) { return String(n).padStart(2, '0') }
@@ -53,76 +53,95 @@ export default function Pomodoro() {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
 
-  const size = 240
-  const r = 100
+  const size = 248
+  const r = 104
   const circ = 2 * Math.PI * r
   const offset = circ - (pct / 100) * circ
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in items-center max-w-sm mx-auto">
+    <div className="flex flex-col gap-6 animate-slide-up items-center max-w-sm mx-auto">
       <div className="w-full">
         <h1 className="text-xl font-bold text-text">Pomodoro</h1>
-        <p className="text-sm text-text-sub mt-0.5">Técnica de foco com intervalos</p>
+        <p className="text-sm text-text-muted mt-0.5">Técnica de foco com intervalos</p>
       </div>
 
-      {/* mode tabs */}
-      <div className="flex gap-2 w-full">
+      {/* Mode pills */}
+      <div className="flex bg-bg-alt rounded-2xl p-1 gap-1 w-full">
         {MODES.map((m, i) => (
           <button key={m.id} onClick={() => switchMode(i)}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all
               ${modeIdx === i
-                ? 'bg-accent-light border-accent text-accent-dark'
-                : 'bg-bg-card border-border text-text-sub hover:bg-bg-hover'}`}>
+                ? 'text-bg font-bold'
+                : 'text-text-muted hover:text-text-sub'}`}
+            style={modeIdx === i ? { background: m.color } : {}}>
             {m.label}
           </button>
         ))}
       </div>
 
-      {/* ring */}
+      {/* Ring */}
       <div className="relative flex items-center justify-center my-2">
-        <svg width={size} height={size}>
-          <circle cx={size/2} cy={size/2} r={r} strokeWidth="6" stroke="#e5e7eb" fill="none" />
+        <div className="absolute rounded-full blur-3xl opacity-20 pointer-events-none"
+          style={{
+            inset: '-20px',
+            background: `radial-gradient(circle, ${mode.color} 0%, transparent 70%)`
+          }} />
+        <svg width={size} height={size} className="relative z-10">
+          <circle cx={size/2} cy={size/2} r={r} strokeWidth="10" stroke={mode.track} fill="rgba(255,255,255,0.015)" />
           <circle
-            cx={size/2} cy={size/2} r={r} strokeWidth="6"
+            cx={size/2} cy={size/2} r={r} strokeWidth="10"
             stroke={mode.color} fill="none" strokeLinecap="round"
             strokeDasharray={circ} strokeDashoffset={offset}
             className="ring-progress transition-all duration-1000"
+            style={{ filter: running ? `drop-shadow(0 0 10px ${mode.color}90)` : `drop-shadow(0 0 4px ${mode.color}50)` }}
           />
         </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="text-5xl font-bold tabular-nums text-text">
+        <div className="absolute flex flex-col items-center gap-1">
+          <span className="font-mono text-[3.5rem] font-bold tabular-nums text-text leading-none tracking-tight">
             {pad(mins)}:{pad(secs)}
           </span>
-          <span className="text-sm text-text-sub mt-1">{mode.label}</span>
+          <span className="text-[10px] text-text-muted uppercase tracking-[0.25em] font-medium">{mode.label}</span>
         </div>
       </div>
 
-      {/* controls */}
-      <div className="flex items-center gap-4">
+      {/* Controls */}
+      <div className="flex items-center gap-5">
         <button onClick={reset}
-          className="w-11 h-11 rounded-full bg-bg-card border border-border flex items-center justify-center
-            text-text-sub hover:text-text hover:border-border-strong transition-all shadow-sm">
+          className="w-12 h-12 rounded-full bg-bg-card border border-border flex items-center justify-center
+            text-text-muted hover:text-text hover:border-border-strong transition-all">
           <RotateCcw size={18} />
         </button>
         <button
           onClick={() => setRunning(v => !v)}
-          className="w-16 h-16 rounded-full flex items-center justify-center font-semibold text-white
-            transition-all hover:opacity-90 active:scale-95 shadow-md"
-          style={{ background: mode.color }}
+          className="w-18 h-18 rounded-full flex items-center justify-center font-semibold
+            transition-all hover:scale-105 active:scale-95"
+          style={{
+            width: 72, height: 72,
+            background: `linear-gradient(135deg, ${mode.color}ee, ${mode.color}99)`,
+            boxShadow: running
+              ? `0 0 32px ${mode.color}60, 0 8px 24px ${mode.color}30`
+              : `0 4px 20px ${mode.color}30`,
+            color: '#07070a',
+          }}
         >
-          {running ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
+          {running ? <Pause size={26} /> : <Play size={26} className="ml-1" />}
         </button>
-        <div className="w-11 h-11" />
+        <div className="w-12 h-12" />
       </div>
 
-      {/* cycles */}
-      <div className="w-full bg-bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-card">
-        <span className="text-sm text-text-sub">Ciclos de foco</span>
+      {/* Cycles */}
+      <div className="w-full bg-bg-card border border-border rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p className="text-xs text-text-muted uppercase tracking-wider font-medium">Ciclos de foco</p>
+          <p className="text-2xl font-bold font-mono text-gradient-amber mt-0.5">{cycles}</p>
+        </div>
         <div className="flex items-center gap-2">
-          {Array.from({ length: Math.max(4, cycles) }).map((_, i) => (
-            <div key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i < cycles ? 'bg-accent' : 'bg-border'}`} />
+          {Array.from({ length: Math.max(4, cycles + 1) }).map((_, i) => (
+            <div key={i}
+              className="w-2 h-2 rounded-full transition-all"
+              style={{ background: i < cycles ? mode.color : 'rgba(255,255,255,0.08)' }}
+            />
           ))}
-          <span className="text-sm font-bold text-accent ml-1">{cycles}</span>
         </div>
       </div>
 

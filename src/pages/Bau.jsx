@@ -1,5 +1,5 @@
 import { useApp } from '../store/AppContext'
-import { Trophy, Lock, Star, Flame } from 'lucide-react'
+import { Trophy, Lock, Star } from 'lucide-react'
 
 const ACHIEVEMENTS = [
   {
@@ -71,43 +71,56 @@ export default function Bau() {
   const ctx = useApp()
   const unlocked = ACHIEVEMENTS.filter(a => a.check(ctx))
   const locked = ACHIEVEMENTS.filter(a => !a.check(ctx))
+  const progressPct = Math.round((unlocked.length / ACHIEVEMENTS.length) * 100)
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in">
+    <div className="flex flex-col gap-6 animate-slide-up">
       <div>
         <h1 className="text-xl font-bold text-text">Baú de conquistas</h1>
-        <p className="text-sm text-text-sub mt-0.5">{unlocked.length}/{ACHIEVEMENTS.length} desbloqueadas</p>
+        <p className="text-sm text-text-muted mt-0.5">{unlocked.length}/{ACHIEVEMENTS.length} desbloqueadas</p>
       </div>
 
-      {/* progress */}
-      <div className="bg-bg-card border border-border rounded-xl p-5 shadow-card">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Trophy size={16} className="text-amber-500" />
+      {/* Progress card */}
+      <div className="bg-bg-card border border-border rounded-2xl p-5 shadow-card">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-accent-light flex items-center justify-center">
+              <Trophy size={15} className="text-accent" />
+            </div>
             <span className="text-sm font-semibold text-text">Progresso geral</span>
           </div>
-          <span className="text-sm font-bold text-accent">{Math.round((unlocked.length / ACHIEVEMENTS.length) * 100)}%</span>
+          <span className="text-2xl font-bold font-mono text-gradient-amber">{progressPct}%</span>
         </div>
-        <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-bg-alt rounded-full overflow-hidden">
           <div
-            className="h-full bg-accent rounded-full transition-all duration-700"
-            style={{ width: `${(unlocked.length / ACHIEVEMENTS.length) * 100}%` }}
+            className="h-full rounded-full transition-all duration-700"
+            style={{
+              width: `${(unlocked.length / ACHIEVEMENTS.length) * 100}%`,
+              background: 'linear-gradient(90deg, #d97706, #fbbf24)',
+            }}
           />
         </div>
+        <p className="text-xs text-text-muted mt-2">{unlocked.length} de {ACHIEVEMENTS.length} conquistas desbloqueadas</p>
       </div>
 
-      {/* unlocked */}
+      {/* Unlocked */}
       {unlocked.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-text-sub uppercase tracking-wider mb-3">Desbloqueadas</h2>
+          <h2 className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Desbloqueadas</h2>
           <div className="grid grid-cols-2 gap-3">
             {unlocked.map(a => (
-              <div key={a.id} className="bg-bg-card border border-border rounded-xl p-4 shadow-card relative">
-                <div className="text-3xl mb-2">{a.icon}</div>
-                <p className="text-sm font-semibold text-text">{a.title}</p>
-                <p className="text-xs text-text-sub mt-0.5">{a.desc}</p>
+              <div key={a.id}
+                className="relative rounded-2xl p-4 overflow-hidden transition-all hover:scale-[1.01]"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(13,13,20,1) 65%)',
+                  border: '1px solid rgba(245,158,11,0.22)',
+                  boxShadow: '0 0 24px rgba(245,158,11,0.08), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }}>
+                <div className="text-3xl mb-3 animate-float">{a.icon}</div>
+                <p className="text-sm font-bold text-text leading-tight">{a.title}</p>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">{a.desc}</p>
                 <div className="absolute top-3 right-3">
-                  <Star size={14} className="text-amber-400" fill="currentColor" />
+                  <Star size={13} className="text-accent" fill="currentColor" />
                 </div>
               </div>
             ))}
@@ -115,18 +128,19 @@ export default function Bau() {
         </div>
       )}
 
-      {/* locked */}
+      {/* Locked */}
       {locked.length > 0 && (
         <div>
-          <h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Bloqueadas</h2>
+          <h2 className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Bloqueadas</h2>
           <div className="grid grid-cols-2 gap-3">
             {locked.map(a => (
-              <div key={a.id} className="bg-bg border border-border rounded-xl p-4 relative opacity-60">
-                <div className="text-3xl mb-2 grayscale opacity-40">{a.icon}</div>
-                <p className="text-sm font-medium text-text-sub">{a.title}</p>
-                <p className="text-xs text-text-muted mt-0.5">{a.desc}</p>
+              <div key={a.id}
+                className="bg-bg-card border border-border rounded-2xl p-4 relative opacity-40 transition-opacity hover:opacity-60">
+                <div className="text-3xl mb-3 grayscale">{a.icon}</div>
+                <p className="text-sm font-semibold text-text-sub leading-tight">{a.title}</p>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">{a.desc}</p>
                 <div className="absolute top-3 right-3">
-                  <Lock size={13} className="text-text-muted" />
+                  <Lock size={12} className="text-text-muted" />
                 </div>
               </div>
             ))}
