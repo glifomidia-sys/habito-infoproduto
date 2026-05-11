@@ -1,60 +1,76 @@
-# HabitZen — Guia do Projeto
+# HabitFlow — Guia do Projeto
 
-## Comandos essenciais
+## Comandos
 ```bash
-npm run dev      # servidor local em http://localhost:5173
-npm run build    # build de produção (checar erros antes de alterações grandes)
-npm run preview  # preview do build
+npm run dev      # http://localhost:5173
+npm run build    # build de produção (rodar antes de qualquer PR)
+npm run preview  # preview do build local
 ```
 
-## Stack e decisões de arquitetura
+## Deploy
+Push para `main` → GitHub Actions faz build e deploy automático.
+- Repositório: https://github.com/glifomidia-sys/habito-infoproduto
+- App online: https://glifomidia-sys.github.io/habito-infoproduto/
 
-**Sem roteador externo.** A navegação é feita via `useState` em `App.jsx`. O mapa `PAGES` define todas as páginas; para adicionar uma nova, basta inserir o componente nesse mapa e no `Sidebar.jsx`.
+## Arquitetura
 
-**Sem biblioteca de estado.** Todo o estado global vive em `src/store/AppContext.jsx` via Context API. Nunca adicione Redux, Zustand ou similar sem necessidade clara.
+**Navegação:** `useState` em `App.jsx`. Mapa `PAGES` mapeia id → componente. Para nova página: adicionar em `PAGES` e em `navItems` no `Sidebar.jsx`.
 
-**Tailwind CSS v3** (não v4). As cores do projeto são tokens customizados — use sempre `surface-*` e `accent` do `tailwind.config.js`, nunca hardcode hex em classes.
+**Estado global:** `src/store/AppContext.jsx` via Context API. Não adicionar Redux, Zustand ou similar.
 
-**Persistência via localStorage.** As chaves são prefixadas com `hz_`. Qualquer novo estado global persistido deve seguir esse padrão.
+**Persistência:** `localStorage` com prefixo `hz_` (`hz_habits`, `hz_completions`, `hz_tasks`, `hz_achievements`).
+
+**Tailwind CSS v3** — não atualizar para v4. Usar sempre os tokens do `tailwind.config.js`.
+
+**`vite.config.js`** tem `base: '/habito-infoproduto/'` — necessário para GitHub Pages. Não remover.
 
 ## Convenções de código
+- `.jsx` para todos os componentes, PascalCase nos nomes
+- Sem TypeScript
+- IDs gerados com `Date.now()`
+- Datas como string `"YYYY-MM-DD"`
+- Páginas que precisam navegar recebem `setPage` como prop
 
-- Componentes em PascalCase, arquivos com a extensão `.jsx`
-- Sem TypeScript — não introduzir
-- Sem arquivos de teste por enquanto
-- `Date.now()` para geração de IDs
-- Datas como string `"YYYY-MM-DD"` (via `.toISOString().split('T')[0]`)
-- Nenhuma página usa `react-router` — recebem `setPage` como prop quando precisam navegar
+## Design system — tema claro Lumina
 
-## Design system
-
-| Token | Valor | Uso |
+| Token | Cor | Uso |
 |---|---|---|
-| `surface-950` | `#07090f` | Background da aplicação |
-| `surface-900` | `#0d1117` | Sidebar |
-| `surface-800` | `#161b27` | Cards e modais |
-| `surface-700` | `#1e2535` | Inputs, barras de progresso |
-| `accent` | `#00d4a3` | Ações primárias, destaques |
+| `bg` | `#f9fafb` | Fundo da aplicação |
+| `bg-card` | `#ffffff` | Cards e modais |
+| `bg-sidebar` | `#f3f4f6` | Sidebar |
+| `bg-hover` | `#f0f0f0` | Hover states |
+| `border` | `#e5e7eb` | Bordas padrão |
+| `text` | `#111827` | Texto principal |
+| `text-sub` | `#6b7280` | Texto secundário |
+| `text-muted` | `#9ca3af` | Texto apagado |
+| `accent` | `#10b981` | Ação primária (verde) |
+| `accent-light` | `#d1fae5` | Fundo de destaque |
+| `accent-dark` | `#059669` | Hover do accent |
+| `danger` | `#ef4444` | Urgente/erro |
 
-- Toda página deve ter `animate-fade-in` na div raiz
-- Modais: `fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4`
-- Botão primário padrão: `bg-accent text-surface-950 font-semibold rounded-xl hover:bg-accent/90`
-- Cards padrão: `bg-surface-800 border border-white/5 rounded-xl`
+**Padrões de componente:**
+- Toda página: `animate-fade-in` na div raiz
+- Card: `bg-bg-card border border-border rounded-xl shadow-card`
+- Botão primário: `bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark`
+- Modal: `fixed inset-0 bg-black/30 backdrop-blur-[2px] z-50 flex items-center justify-center p-4`
+- Input: `bg-bg border border-border rounded-lg focus:border-accent focus:ring-1 focus:ring-accent/20`
 
-## Onde mexer em cada funcionalidade
+## Onde mexer
 
-| Funcionalidade | Arquivo |
+| O que mudar | Arquivo |
 |---|---|
-| Adicionar nova página | `src/App.jsx` (PAGES map) + `src/components/Sidebar.jsx` (navItems) |
-| Lógica de hábitos/streak | `src/store/AppContext.jsx` |
-| Adicionar conquista no Baú | `src/pages/Bau.jsx` — array `ACHIEVEMENTS` |
-| Paleta de cores | `tailwind.config.js` |
-| Animações globais | `tailwind.config.js` + `src/index.css` |
-| Scroll e scrollbar | `src/index.css` |
+| Nova página | `src/App.jsx` (PAGES) + `src/components/Sidebar.jsx` (navItems) |
+| Lógica de hábitos / streak | `src/store/AppContext.jsx` |
+| Nova conquista | `src/pages/Bau.jsx` — array `ACHIEVEMENTS` |
+| Cores e tokens | `tailwind.config.js` |
+| Animações / scrollbar | `src/index.css` |
+| CI/CD | `.github/workflows/deploy.yml` |
 
 ## O que não fazer
-- Não criar novos arquivos CSS além de `index.css`
-- Não instalar bibliotecas de componentes (shadcn, MUI, etc.) — design é próprio
+- Não hardcodar hex em classes Tailwind — usar tokens
+- Não criar arquivos CSS além de `index.css`
+- Não instalar bibliotecas de componentes (shadcn, MUI, Radix standalone...)
 - Não usar `react-router-dom`
 - Não adicionar TypeScript
-- Não modificar `App.css` (está intencionalmente vazio)
+- Não remover `base` do `vite.config.js`
+- Não modificar `App.css` (intencionalmente vazio)
